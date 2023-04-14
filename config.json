@@ -1,0 +1,14 @@
+{  
+    "server": "servicesapp.database.windows.net", 
+    "authentication": {
+        "type": "default",
+        "options": {
+            "userName": "CloudSA834c4d56", 
+            "password": "Prabhupada108" 
+        }
+    },
+    "options": {
+        "encrypt": true,
+        "database": "servicesapp"
+    }
+}
