@@ -75,21 +75,35 @@ function validateUser(user, password) {
           //Valida si hay resultados
           if (res.length > 0) {
             //Valida que las contraseñas desencriptadas coincidan
-
             const passwordDb = res[0].clave;
             let flagValidatePassword = validatePassword(password, passwordDb);
 
             // Si la contraseña es valida retorna true
             if (flagValidatePassword) {
-              console.log("sin son igaules");
-              responseData = {
-                status: true,
-                data: res[0],
-              };
+              //Validar si el usuario esta activo
+              const estadoUsuario = res[0].estado;
+              if (estadoUsuario == 1) {
+                responseData = {
+                  status: true,
+                  code: 200,
+                  message: "ok",
+                  data: res[0],
+                };
+              } else {
+                //Si no esta activo false
+                responseData = {
+                  status: false,
+                  code: 401,
+                  message: "Usuario no esta activo",
+                  data: res,
+                };
+              }
             } else {
               //Si no es valida retorna false
               responseData = {
                 status: false,
+                code: 403,
+                message: "Contraseña invalida",
                 data: res,
               };
             }
@@ -97,6 +111,8 @@ function validateUser(user, password) {
             //Si no hay resultados retorna false
             responseData = {
               status: false,
+              code: 404,
+              message: "No existe el usuario",
               data: res,
             };
           }
