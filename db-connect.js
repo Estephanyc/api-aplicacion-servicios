@@ -75,7 +75,6 @@ function validateUser(user, password) {
           //Valida si hay resultados
           if (res.length > 0) {
             //Valida que las contraseñas desencriptadas coincidan
-
             const passwordDb = res[0].clave;
             let flagValidatePassword = validatePassword(password, passwordDb);
 
@@ -90,6 +89,8 @@ function validateUser(user, password) {
               //Si no es valida retorna false
               responseData = {
                 status: false,
+                code: 403,
+                message: "Contraseña invalida",
                 data: res,
               };
             }
@@ -97,6 +98,8 @@ function validateUser(user, password) {
             //Si no hay resultados retorna false
             responseData = {
               status: false,
+              code: 404,
+              message: "No existe el usuario",
               data: res,
             };
           }
