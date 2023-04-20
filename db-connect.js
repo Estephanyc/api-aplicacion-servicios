@@ -81,7 +81,7 @@ function validateUser(user, password) {
 
             // Si la contraseña es valida retorna true
             if (flagValidatePassword) {
-              console.log("sin son igaules");
+              console.log("sin son iguales");
               responseData = {
                 status: true,
                 data: res[0],
@@ -130,4 +130,33 @@ function validatePassword(userPassword, dbPassword) {
 module.exports = {
   getApps,
   validateUser,
+  registrarAuditoria,
 };
+
+function registrarAuditoria(id_usuario, id_tipo_auditoria, id_modulo, mensaje) {
+  return new Promise((resolve, reject) => {
+    getConnection()
+    // obtener la fecha y hora actual
+    var fechaActual = new Date();
+    var horaActual = fechaActual.toLocaleTimeString();
+    fechaActual = fechaActual.toLocaleDateString();
+
+    // crear la consulta SQL de inserción
+    var query = "INSERT INTO AUDITORIA (fecha, hora, id_usuario, id_tipo_auditoria, id_modulo, mensaje) VALUES ('" + fechaActual + "', '" + horaActual + "', " + id_usuario + ", " + id_tipo_auditoria + ", " + id_modulo + ", '" + mensaje + "')";
+
+    // crear la solicitud a la base de datos
+    const request = new Request(query, function(err, rowCount) {
+      if (err) {
+        console.error('Error al agregar registro de auditoría: ', err);
+        reject(err);
+        return;
+      }
+      console.log('Registro de auditoría agregado correctamente.');
+      resolve();
+    });
+
+    // ejecutar la solicitud a la base de datos
+    connection.execSql(request);
+  });
+}
+
