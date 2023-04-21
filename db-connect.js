@@ -72,7 +72,7 @@ function validateUser(user, password) {
         .then((res) => {
           let responseData;
 
-          //Valida si hay resultados
+          //Valida si existe el usuario
           if (res.length > 0) {
             //Valida que las contraseñas desencriptadas coincidan
             const passwordDb = res[0].clave;
