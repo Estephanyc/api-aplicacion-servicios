@@ -88,7 +88,7 @@ function validateUser(user, password) {
         .then((res) => {
           let responseData;
 
-          //Valida si existe el usuario
+          //Valida si hay resultados
           if (res.length > 0) {
             //Valida que las contraseñas desencriptadas coincidan
             const passwordDb = res[0].clave;
@@ -96,10 +96,24 @@ function validateUser(user, password) {
 
             // Si la contraseña es valida retorna true
             if (flagValidatePassword) {
-              responseData = {
-                status: true,
-                data: res[0],
-              };
+              //Validar si el usuario esta activo
+              const estadoUsuario = res[0].estado;
+              if (estadoUsuario == 1) {
+                responseData = {
+                  status: true,
+                  code: 200,
+                  message: "ok",
+                  data: res[0],
+                };
+              } else {
+                //Si no esta activo false
+                responseData = {
+                  status: false,
+                  code: 401,
+                  message: "Usuario no esta activo",
+                  data: res,
+                };
+              }
             } else {
               //Si no es valida retorna false
               responseData = {
