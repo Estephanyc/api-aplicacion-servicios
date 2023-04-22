@@ -18,6 +18,7 @@ function executeStatement(query) {
   return new Promise((resolve, reject) => {
     const request = new Request(query, (err, rowCount) => {
       if (err) {
+        console.log(err)
         throw err;
       }
       connection.close();
@@ -195,13 +196,11 @@ function registrarAuditoria(body) {
 
   return new Promise((resolve, reject) => {
     // obtener la fecha y hora actual
-    var fechaActual = new Date();
-    var horaActual = fechaActual.toLocaleTimeString();
-    fechaActual = fechaActual.toLocaleDateString();
+    const horaActual = fechaActual.toLocaleTimeString();
 
     // crear la consulta SQL de inserción
     const query = `INSERT INTO AUDITORIA (fecha, hora, id_usuario, tipo_auditoria, modulo, mensaje) values(
-      '${fechaActual}', '${horaActual}', ${id_usuario}, '${tipo_auditoria}', '${modulo}', '${mensaje}'
+      getdate(), '${horaActual}', ${id_usuario}, '${tipo_auditoria}', '${modulo}', '${mensaje}'
     )`;
 
     //Obtener la conexión
