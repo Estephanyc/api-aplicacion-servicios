@@ -74,7 +74,11 @@ function getApp(idApp) {
 
 function validateUser(user, password) {
   return new Promise((resolve, reject) => {
-    const query = `select * from USUARIOS where nombre_usuario = '${user}'`;
+    const query = `select * from USUARIOS u 
+    join APLICACION a on a.id_app = u.id_app
+    join EMPRESA e on e.id_app = u.id_app
+    where u.nombre_usuario = '${user}'`;
+
     getConnection();
 
     connection.connect((err) => {
