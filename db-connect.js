@@ -40,19 +40,35 @@ function executeStatement(query) {
   });
 }
 
-function getApps() {
+function getApp(idApp) {
+  console.log("id app ", idApp);
+
   return new Promise((resolve, reject) => {
-    const query = "select * from APLICACION";
+    const query = `select * from APLICACION where id_app = '${idApp}'`;
+    getConnection();
+
     connection.connect((err) => {
       if (err) {
         reject(err);
       }
       const response = executeStatement(query)
         .then((res) => {
-          resolve(res);
+          const responseData = {
+            status: true,
+            code: 200,
+            message: "ok",
+            data: res[0],
+          };
+          resolve(responseData);
         })
         .catch((err) => {
-          console.log(err);
+          const responseData = {
+            status: false,
+            code: 403,
+            message: "Error al obtener la app",
+            data: err,
+          };
+          resolve(responseData);
         });
     });
   });
@@ -80,7 +96,6 @@ function validateUser(user, password) {
 
             // Si la contraseña es valida retorna true
             if (flagValidatePassword) {
-              console.log("sin son iguales");
               responseData = {
                 status: true,
                 data: res[0],
@@ -130,36 +145,53 @@ function validatePassword(userPassword, dbPassword) {
   }
 }
 
-module.exports = {
-  getApps,
-  validateUser,
-  registrarAuditoria,
-};
+function registrarAuditoria(body) {
+  const { id_usuario, tipo_auditoria, modulo, mensaje } = body;
 
-function registrarAuditoria(id_usuario, id_tipo_auditoria, id_modulo, mensaje) {
   return new Promise((resolve, reject) => {
-    getConnection()
     // obtener la fecha y hora actual
     var fechaActual = new Date();
     var horaActual = fechaActual.toLocaleTimeString();
     fechaActual = fechaActual.toLocaleDateString();
 
     // crear la consulta SQL de inserción
-    var query = "INSERT INTO AUDITORIA (fecha, hora, id_usuario, id_tipo_auditoria, id_modulo, mensaje) VALUES ('" + fechaActual + "', '" + horaActual + "', " + id_usuario + ", " + id_tipo_auditoria + ", " + id_modulo + ", '" + mensaje + "')";
+    const query = `INSERT INTO AUDITORIA (fecha, hora, id_usuario, tipo_auditoria, modulo, mensaje) values(
+      '${fechaActual}', '${horaActual}', ${id_usuario}, '${tipo_auditoria}', '${modulo}', '${mensaje}'
+    )`;
 
-    // crear la solicitud a la base de datos
-    const request = new Request(query, function(err, rowCount) {
+    //Obtener la conexión
+    getConnection();
+
+    connection.connect((err) => {
       if (err) {
-        console.error('Error al agregar registro de auditoría: ', err);
+        console.log(err);
         reject(err);
-        return;
       }
-      console.log('Registro de auditoría agregado correctamente.');
-      resolve();
+      const response = executeStatement(query)
+        .then((res) => {
+          let responseData = {
+            status: true,
+            code: 200,
+            message: "Registro actualizado correctamente",
+            data: res,
+          };
+          resolve(responseData);
+        })
+        .catch((err) => {
+          let responseData = {
+            status: false,
+            code: 500,
+            message: "Registro no se pudo actualizar",
+            data: err,
+          };
+          resolve(responseData);
+        });
     });
-
-    // ejecutar la solicitud a la base de datos
-    connection.execSql(request);
   });
 }
 
+module.exports = {
+  getApp,
+  validateUser,
+  registrarAuditoria,
+};

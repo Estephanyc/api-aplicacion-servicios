@@ -27,35 +27,51 @@ app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
 
-app.get("/apps", (req, res) => {
+app.post("/getApp", (req, res) => {
+  let body = req.body;
   database
-    .getApps()
+    .getApp(body.idApp)
     .then((data) => {
       res.json({ message: "apps oks", data: data });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      res.json({ message: "apps error", data: err });
+    });
+});
+
+app.post("/registrarAuditoria", (req, res) => {
+  let body = req.body;
+  database
+    .registrarAuditoria(body)
+    .then((data) => {
+      res.json({ message: "Auditoria ok", data: data });
+    })
+    .catch((err) => {
+      res.json({ message: "Auditoria error", data: err });
+    });
 });
 
 app.post("/validateUser", (req, res) => {
   let body = req.body;
-  console.log("se llamo a validateUser ");
   database
     .validateUser(body.usuario, body.password)
     .then((data) => {
-      console.log("se recibidio respuesta de validateUser ");
-
       res.json({ message: "Validate user", data: data });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      res.json({ message: "Validate user error", data: err });
+    });
 });
 
 app.get("/modules", (req, res) => {
   database
     .getModules()
     .then((data) => {
-      res.json({ message: "apps oks", data: data });
+      res.json({ message: "Nodules oks", data: data });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      res.json({ message: "Get modules error", data: err });
+    });
 });
 
 app.listen(port, () => {
