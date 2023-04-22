@@ -56,6 +56,7 @@ app.post("/validateUser", (req, res) => {
   database
     .validateUser(body.usuario, body.password)
     .then((data) => {
+      console.log("antes de en vali", data);
       res.json({ message: "Validate user", data: data });
     })
     .catch((err) => {

@@ -41,8 +41,6 @@ function executeStatement(query) {
 }
 
 function getApp(idApp) {
-  console.log("id app ", idApp);
-
   return new Promise((resolve, reject) => {
     const query = `select * from APLICACION where id_app = '${idApp}'`;
     getConnection();
@@ -81,7 +79,6 @@ function validateUser(user, password) {
 
     connection.connect((err) => {
       if (err) {
-        console.log(err);
         reject(err);
       }
       const response = executeStatement(query)
@@ -90,7 +87,7 @@ function validateUser(user, password) {
 
           //Valida si hay resultados
           if (res.length > 0) {
-            //Valida que las contraseñas desencriptadas coincidan
+            //Valida que las contraseñas desencriptadas coinciden
             const passwordDb = res[0].clave;
             let flagValidatePassword = validatePassword(password, passwordDb);
 
@@ -105,6 +102,7 @@ function validateUser(user, password) {
                   message: "ok",
                   data: res[0],
                 };
+                resolve(responseData);
               } else {
                 //Si no esta activo false
                 responseData = {
@@ -113,6 +111,7 @@ function validateUser(user, password) {
                   message: "Usuario no esta activo",
                   data: res,
                 };
+                resolve(responseData);
               }
             } else {
               //Si no es valida retorna false
@@ -122,6 +121,36 @@ function validateUser(user, password) {
                 message: "Contraseña invalida",
                 data: res,
               };
+
+              //id de usuario
+              const id_usuario = res[0].id_usuario;
+
+              //Registrar inicio invalido
+              registrarLoginIncorrecto(id_usuario)
+                .then((response) => {
+                  //Validar si es el 3 intento de inicio de sesion invalido
+                  obtenerIntentosFallidos(id_usuario)
+                    .then((intentosFallidos) => {
+                      console.log(intentosFallidos);
+                      if (intentosFallidos >= 3) {
+                        responseData = {
+                          status: false,
+                          code: 405,
+                          message:
+                            "El usuario ha sido bloqueado, intente iniciar más tarde",
+                          data: res,
+                        };
+                      }
+                      console.log("antes e resolver", responseData);
+                      resolve(responseData);
+                    })
+                    .catch((err) => {
+                      reject(err);
+                    });
+                })
+                .catch((err) => {
+                  reject(err);
+                });
             }
           } else {
             //Si no hay resultados retorna false
@@ -131,11 +160,11 @@ function validateUser(user, password) {
               message: "No existe el usuario",
               data: res,
             };
+            resolve(responseData);
           }
-          resolve(responseData);
         })
         .catch((err) => {
-          console.log(err);
+          reject(err);
         });
     });
   });
@@ -178,7 +207,6 @@ function registrarAuditoria(body) {
 
     connection.connect((err) => {
       if (err) {
-        console.log(err);
         reject(err);
       }
       const response = executeStatement(query)
@@ -199,6 +227,50 @@ function registrarAuditoria(body) {
             data: err,
           };
           resolve(responseData);
+        });
+    });
+  });
+}
+
+function registrarLoginIncorrecto(id_usuario) {
+  return new Promise((resolve, reject) => {
+    const query = `UPDATE USUARIOS 
+    SET intentos_fallidos = (SELECT U2.intentos_fallidos + 1 FROM USUARIOS U2 WHERE U2.id_usuario = ${id_usuario})
+    where id_usuario = ${id_usuario}`;
+
+    getConnection();
+
+    connection.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+      const response = executeStatement(query)
+        .then((res) => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  });
+}
+
+function obtenerIntentosFallidos(id_usuario) {
+  return new Promise((resolve, reject) => {
+    const query = `select intentos_fallidos from USUARIOS where id_usuario = ${id_usuario}`;
+
+    getConnection();
+
+    connection.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+      const response = executeStatement(query)
+        .then((res) => {
+          resolve(res[0].intentos_fallidos);
+        })
+        .catch((err) => {
+          reject(err);
         });
     });
   });
