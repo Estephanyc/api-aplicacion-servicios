@@ -135,7 +135,6 @@ function validateUser(user, password) {
                   //Validar si es el 3 intento de inicio de sesion invalido
                   obtenerIntentosFallidos(id_usuario)
                     .then((intentosFallidos) => {
-                      console.log(intentosFallidos);
                       if (intentosFallidos >= 3) {
                         responseData = {
                           status: false,
@@ -145,7 +144,6 @@ function validateUser(user, password) {
                           data: res,
                         };
                       }
-                      console.log("antes e resolver", responseData);
                       resolve(responseData);
                     })
                     .catch((err) => {
