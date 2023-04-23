@@ -279,8 +279,45 @@ function obtenerIntentosFallidos(id_usuario) {
   });
 }
 
+function getModules(idApp) {
+  return new Promise((resolve, reject) => {
+    console.log (idApp)
+    const query = `select * from MODULOS m
+    join OPCIONES o ON o.id_modulo = m.id_modulo
+    where m.id_app = '${idApp}'`; 
+    console.log(query)
+    getConnection();
+
+    connection.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+      const response = executeStatement(query)
+        .then((res) => {
+          const responseData = {
+            status: true,
+            code: 200,
+            message: "ok",
+            data: res,
+          };
+          resolve(responseData);
+        })
+        .catch((err) => {
+          const responseData = {
+            status: false,
+            code: 403,
+            message: "Error al obtener la app",
+            data: err,
+          };
+          resolve(responseData);
+        });
+    });
+  });
+}
+
 module.exports = {
   getApp,
   validateUser,
   registrarAuditoria,
+  getModules,
 };
