@@ -18,7 +18,7 @@ function executeStatement(query) {
   return new Promise((resolve, reject) => {
     const request = new Request(query, (err, rowCount) => {
       if (err) {
-        console.log(err)
+        console.log(err);
         throw err;
       }
       connection.close();
@@ -78,6 +78,8 @@ function validateUser(user, password) {
     const query = `select * from USUARIOS u 
     join APLICACION a on a.id_app = u.id_app
     join EMPRESA e on e.id_app = u.id_app
+    join ROLES_USUARIOS ro on ro.id_usuario = u.id_usuario
+    join ROLES R on r.id_rol = ro.id_rol
     where u.nombre_usuario = '${user}'`;
 
     getConnection();
