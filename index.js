@@ -68,7 +68,7 @@ app.post("/modules", (req, res) => {
   database
     .getModules(body.id_app)
     .then((data) => {
-      res.json({ message: "Nodules oks", data: data });
+      res.json({ message: "Modules oks", data: data });
     })
     .catch((err) => {
       res.json({ message: "Get modules error", data: err });

@@ -282,9 +282,7 @@ function obtenerIntentosFallidos(id_usuario) {
 function getModules(idApp) {
   return new Promise((resolve, reject) => {
     console.log (idApp)
-    const query = `select * from MODULOS m
-    join OPCIONES o ON o.id_modulo = m.id_modulo
-    where m.id_app = '${idApp}'`; 
+    const query = `select * from MODULOS where m.id_app = '${idApp}'`; 
     console.log(query)
     getConnection();
 
