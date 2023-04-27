@@ -282,7 +282,7 @@ function obtenerIntentosFallidos(id_usuario) {
 function getModules(idApp) {
   return new Promise((resolve, reject) => {
     console.log (idApp)
-    const query = `select * from MODULOS where m.id_app = '${idApp}'`; 
+    const query = `select * from MODULOS where id_app = '${idApp}'`; 
     console.log(query)
     getConnection();
 
@@ -291,7 +291,19 @@ function getModules(idApp) {
         reject(err);
       }
       const response = executeStatement(query)
-        .then((res) => {
+        .then((res) => { 
+          res.forEach(module => {
+            module.opciones = []
+            console.log ('module',module)
+            const querymodules = `select * from OPCIONES where id_modulo = '${module.id_modulo}'`
+            const response = executeStatement(querymodules)
+            .then((opcion)=> {
+              module.opciones = opcion
+              console.log('opciones', opcion)
+            })
+       
+            console.log(module)
+          })
           const responseData = {
             status: true,
             code: 200,
