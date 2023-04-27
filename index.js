@@ -66,7 +66,7 @@ app.post("/validateUser", (req, res) => {
 app.post("/modules", (req, res) => {
   let body = req.body;
   database
-    .getModules(body.id_app)
+    .getModules(body.id_app, body.id_usuario)
     .then((data) => {
       res.json({ message: "Nodules oks", data: data });
     })

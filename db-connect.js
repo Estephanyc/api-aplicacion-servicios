@@ -279,13 +279,24 @@ function obtenerIntentosFallidos(id_usuario) {
   });
 }
 
-function getModules(idApp) {
+function getModules(idApp, idUsuario) {
   return new Promise((resolve, reject) => {
-    console.log (idApp)
-    const query = `select * from MODULOS m
-    join OPCIONES o ON o.id_modulo = m.id_modulo
-    where m.id_app = '${idApp}'`; 
-    console.log(query)
+    const query = `select
+      m.id_modulo,
+      m.nombre_modulo,
+      m.estado,
+      m.icono,
+      o.id_opcion,
+      o.nombre_opcion,
+      o.componente
+    from MODULOS m
+        join OPCIONES o ON o.id_modulo = m.id_modulo
+        join USUARIOS u on id_usuario = '${idUsuario}'
+        join ROLES_USUARIOS ru on ru.id_usuario = u.id_usuario
+        join ROLES_OPCIONES ro on ru.id_rol = ro.id_rol and ro.id_opcion = o.id_opcion
+    where m.id_app = '${idApp}'`;
+
+    console.log(query);
     getConnection();
 
     connection.connect((err) => {
