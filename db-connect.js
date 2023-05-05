@@ -197,12 +197,9 @@ function registrarAuditoria(body) {
   const { id_usuario, tipo_auditoria, modulo, mensaje } = body;
 
   return new Promise((resolve, reject) => {
-    // obtener la fecha y hora actual
-    const horaActual = fechaActual.toLocaleTimeString();
-
     // crear la consulta SQL de inserción
     const query = `INSERT INTO AUDITORIA (fecha, hora, id_usuario, tipo_auditoria, modulo, mensaje) values(
-      getdate(), '${horaActual}', ${id_usuario}, '${tipo_auditoria}', '${modulo}', '${mensaje}'
+      getdate(), getdate(), '${id_usuario}', '${tipo_auditoria}', '${modulo}', '${mensaje}'
     )`;
 
     //Obtener la conexión
@@ -223,13 +220,14 @@ function registrarAuditoria(body) {
           resolve(responseData);
         })
         .catch((err) => {
+          console.log(err);
           let responseData = {
             status: false,
             code: 500,
             message: "Registro no se pudo actualizar",
             data: err,
           };
-          resolve(responseData);
+          reject(responseData);
         });
     });
   });
@@ -296,7 +294,6 @@ function getModules(idApp, idUsuario) {
         join ROLES_OPCIONES ro on ru.id_rol = ro.id_rol and ro.id_opcion = o.id_opcion
     where m.id_app = '${idApp}'`;
 
-    console.log(query);
     getConnection();
 
     connection.connect((err) => {
