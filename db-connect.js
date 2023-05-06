@@ -202,6 +202,7 @@ function registrarAuditoria(body) {
       getdate(), getdate(), '${id_usuario}', '${tipo_auditoria}', '${modulo}', '${mensaje}'
     )`;
 
+    console.log(query);
     //Obtener la conexión
     getConnection();
 
