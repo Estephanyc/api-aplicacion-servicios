@@ -116,7 +116,7 @@ function validateUser(user, password) {
                   status: false,
                   code: 401,
                   message: "Usuario no esta activo",
-                  data: res,
+                  data: res[0],
                 };
                 resolve(responseData);
               }
@@ -126,7 +126,7 @@ function validateUser(user, password) {
                 status: false,
                 code: 403,
                 message: "Contraseña invalida",
-                data: res,
+                data: res[0],
               };
 
               //id de usuario
